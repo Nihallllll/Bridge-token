@@ -2,17 +2,19 @@
 pragma solidity ^0.8.13;
 import {IERC20}  from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract BridgeContract is Ownable {
     //state variables
-    uint256 internal nonce;
-    
+    uint256 public nonce;
+    using SafeERC20 for IERC20;
+
     //mappings 
     mapping(uint256 => bool ) internal used_nonces;
 
     //events
-    event Bridged_event(address indexed , uint256  );
-    event Redeemed(address indexed,uint256);
+    event Bridged_event(address indexed sender, uint256  amount);
+    event Redeemed(address indexed ,uint256);
     //errors
     error Not_allowed_to_spend(); 
     error Bridge_transaction_failed();
@@ -24,7 +26,7 @@ contract BridgeContract is Ownable {
 
     function Bridge(IERC20 _tokenAddress, uint256 _amount) public  {
         require(_tokenAddress.allowance(msg.sender, address(this)) >=  _amount , Not_allowed_to_spend());
-        require(_tokenAddress.transferFrom(msg.sender, address(this), _amount) ,Bridge_transaction_failed());
+        _tokenAddress.safeTransferFrom( msg.sender, address(this), _amount);
         emit Bridged_event(msg.sender, _amount);
     }
     
@@ -34,8 +36,8 @@ contract BridgeContract is Ownable {
         address _to,
         uint256 _amount
     ) external onlyOwner {
-        require(_nonce == nonce + 1 ,Nonce_not_valid());
-        require(_tokenaddress.transfer(_to, _amount),Token_tarnsfer_failed());
+        require(!used_nonces[_nonce] ,Nonce_not_valid());
+        _tokenaddress.safeTransfer(_to, _amount);
         emit Redeemed(_to , _amount);
     }
 
