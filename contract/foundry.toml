@@ -3,4 +3,6 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+bnbsctest = "https://data-seed-prebsc-1-s1.binance.org:8545/"
+avafuji = "https://api.avax-test.network/ext/bc/C/rpc"
