@@ -8,6 +8,8 @@ import { config } from './config'
 const queryClient = new QueryClient()
 
 export function App() {
+  
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

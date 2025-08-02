@@ -2,17 +2,17 @@
 pragma solidity ^0.8.13;
 
 import {Script, console} from "forge-std/Script.sol";
-import {BridgeContract} from "../src/Bridge_contract.sol";
+import {MockERC20} from "../src/Mock-token.sol";
 
 contract BridgeScript is Script {
-    BridgeContract public bridgeContract;
+    MockERC20 public mockerc20;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        bridgeContract = new BridgeContract();
+        mockerc20 = new MockERC20();
 
         vm.stopBroadcast();
     }
