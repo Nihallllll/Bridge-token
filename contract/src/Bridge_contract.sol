@@ -13,8 +13,8 @@ contract BridgeContract is Ownable {
     mapping(uint256 => bool ) internal used_nonces;
 
     //events
-    event Bridged_event(address indexed sender, uint256  amount);
-    event Redeemed(address indexed ,uint256);
+    event Bridged_event(IERC20 token , uint256  amount , address indexed sender  );
+    event Redeemed(IERC20 token , address indexed receiver , uint256 amount);
     //errors
     error Not_allowed_to_spend(); 
     error Bridge_transaction_failed();
@@ -27,7 +27,7 @@ contract BridgeContract is Ownable {
     function Bridge(IERC20 _tokenAddress, uint256 _amount) public  {
         require(_tokenAddress.allowance(msg.sender, address(this)) >=  _amount , Not_allowed_to_spend());
         _tokenAddress.safeTransferFrom( msg.sender, address(this), _amount);
-        emit Bridged_event(msg.sender, _amount);
+        emit Bridged_event(_tokenAddress, _amount , msg.sender);
     }
     
     function redeem(
@@ -38,7 +38,7 @@ contract BridgeContract is Ownable {
     ) external onlyOwner {
         require(!used_nonces[_nonce] ,Nonce_not_valid());
         _tokenaddress.safeTransfer(_to, _amount);
-        emit Redeemed(_to , _amount);
+        emit Redeemed(_tokenaddress,_to , _amount);
     }
 
 }
